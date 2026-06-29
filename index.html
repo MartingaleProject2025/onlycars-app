@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     OnlyCars · landing page  (self-contained, no build step)
+     Deploy: drop this folder on any static host (GitHub Pages / Cloudflare
+     Pages / Vercel). Edit the two values in CONFIG below before going live.
+────────────────────────────────────────────────────────────────────────── -->
+
+<title>OnlyCars — Swipe. Collect. Show off your garage.</title>
+<meta name="description" content="OnlyCars is a swipeable car discovery game. Swipe through a curated feed of cars, save your favourites to a personal garage, and level up your collection by rarity. Free on iOS.">
+<link rel="canonical" href="https://onlycars.app/">
+<meta name="theme-color" content="#070b18">
+
+<!-- Open Graph / Pinterest rich preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="OnlyCars — Swipe. Collect. Show off your garage.">
+<meta property="og:description" content="A swipeable car discovery game. Discover, collect, and show off rare cars. Free on iOS.">
+<meta property="og:image" content="assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+
+<script>
+/* ─── CONFIG ─── edit these two, then deploy. ────────────────────────────────
+   1) APP_STORE_URL — your App Store link. Once live, generate an Apple
+      *campaign link* (App Store Connect → App Analytics → Acquisition →
+      campaign links) carrying a token like  ?ct=pinterest  so installs from
+      Pinterest show up in App Analytics. Paste that full link here.
+   2) PINTEREST_TAG_ID — from Pinterest Ads Manager → Conversions → Tag.
+      Leave "" until you have it; tracking stays dormant (no errors).
+────────────────────────────────────────────────────────────────────────────*/
+window.ONLYCARS = {
+  APP_STORE_URL: "https://apps.apple.com/us/app/onlycars-dream-garage/id6761687910?ct=pinterest", // live · keep ?ct=pinterest for App Analytics
+  PINTEREST_TAG_ID: "" // TODO paste Pinterest Tag ID, e.g. "2613xxxxxxxxx"
+};
+
+/* Pinterest base tag — only loads when a real Tag ID is set. */
+if (window.ONLYCARS.PINTEREST_TAG_ID) {
+  !function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(
+  Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version="3.0";
+  var t=document.createElement("script");t.async=!0,t.src=e;var r=document.getElementsByTagName(
+  "script")[0];r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
+  pintrk("load", window.ONLYCARS.PINTEREST_TAG_ID);
+  pintrk("page");
+}
+</script>
+
+<style>
+  :root{
+    --bg:#070b18; --bg2:#04060e; --ink:#e9eef9; --mut:#93a3c4;
+    --gold:#f5c542; --blue:#4aa8ff; --teal:#2dd4bf;
+    --line:rgba(255,255,255,.09); --panel:rgba(255,255,255,.04);
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html{background:var(--bg2)}
+  body{
+    margin:0; color:var(--ink); background-color:var(--bg2);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background-image:
+      radial-gradient(900px 600px at 15% 0, rgba(74,168,255,.16), transparent 60%),
+      radial-gradient(800px 600px at 95% 360px, rgba(245,197,66,.12), transparent 55%),
+      linear-gradient(180deg, var(--bg), var(--bg2));
+    background-repeat:no-repeat; background-size:100% 100%;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  a{color:inherit}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+  .muted{color:var(--mut)}
+
+  /* header */
+  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
+    background:rgba(7,11,24,.6); border-bottom:1px solid var(--line)}
+  .nav{display:flex; align-items:center; justify-content:space-between; height:62px}
+  .nav img{height:26px; display:block}
+  .btn{display:inline-flex; align-items:center; gap:8px; border:0; cursor:pointer;
+    font-weight:700; font-size:15px; padding:11px 18px; border-radius:999px;
+    text-decoration:none; transition:transform .12s ease, box-shadow .12s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-gold{background:linear-gradient(180deg,#ffd861,#f0b72e); color:#1a1407;
+    box-shadow:0 8px 24px rgba(245,197,66,.28)}
+  .btn-ghost{background:var(--panel); color:var(--ink); border:1px solid var(--line)}
+
+  /* App Store badge button */
+  .appstore{display:inline-flex; align-items:center; gap:11px; text-decoration:none;
+    background:#000; color:#fff; border:1px solid rgba(255,255,255,.18);
+    padding:12px 20px; border-radius:14px; transition:transform .12s ease}
+  .appstore:hover{transform:translateY(-1px)}
+  .appstore svg{width:26px; height:26px; flex:0 0 auto}
+  .appstore .s{font-size:11px; letter-spacing:.04em; opacity:.85; line-height:1}
+  .appstore .b{font-size:19px; font-weight:600; line-height:1.15; margin-top:2px}
+
+  /* hero */
+  .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:46px; align-items:center;
+    padding:74px 0 56px}
+  .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--blue); margin-bottom:18px}
+  h1{font-size:clamp(38px,6vw,62px); line-height:1.04; margin:0 0 18px; letter-spacing:-.02em}
+  .lede{font-size:clamp(17px,2.3vw,20px); color:#c4d0e6; max-width:34ch; margin:0 0 28px}
+  .cta-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+  .cta-note{font-size:13px; color:var(--mut)}
+  .hero-shot{position:relative}
+  .hero-shot img{width:100%; border-radius:18px; display:block;
+    border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .hero-shot::after{content:""; position:absolute; inset:-12% -8% auto -8%; height:60%;
+    background:radial-gradient(closest-side, rgba(74,168,255,.35), transparent);
+    filter:blur(30px); z-index:-1}
+
+  /* rarity strip */
+  .rarity{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+    padding:8px 0 4px}
+  .chip{display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+    letter-spacing:.04em; padding:8px 14px; border-radius:999px;
+    background:var(--panel); border:1px solid var(--line)}
+  .dot{width:10px; height:10px; border-radius:3px; transform:rotate(45deg)}
+
+  /* sections */
+  section{padding:54px 0}
+  .kicker{text-align:center; font-size:13px; font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:10px}
+  h2{font-size:clamp(26px,4vw,38px); text-align:center; margin:0 0 12px; letter-spacing:-.02em}
+  .sub{text-align:center; color:var(--mut); max-width:56ch; margin:0 auto 34px}
+
+  /* feature cards */
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:22px}
+  .card .ic{width:42px; height:42px; border-radius:11px; display:grid; place-items:center;
+    background:rgba(74,168,255,.12); margin-bottom:14px}
+  .card .ic svg{width:22px; height:22px; stroke:var(--blue); fill:none; stroke-width:2}
+  .card h3{margin:0 0 6px; font-size:17px}
+  .card p{margin:0; font-size:14.5px; color:var(--mut)}
+
+  /* gallery */
+  .gallery{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .gallery img{width:100%; border-radius:14px; display:block; border:1px solid var(--line);
+    box-shadow:0 16px 40px rgba(0,0,0,.4)}
+
+  /* final cta */
+  .final{text-align:center; background:
+      radial-gradient(600px 300px at 50% 0%, rgba(245,197,66,.14), transparent 60%);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .final .btns{display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:24px}
+
+  /* footer */
+  footer{padding:42px 0; color:var(--mut); font-size:13.5px}
+  .frow{display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap;
+    align-items:center; border-top:1px solid var(--line); padding-top:24px}
+  footer a{color:var(--mut); text-decoration:none; margin-right:18px}
+  footer a:hover{color:var(--ink)}
+  .disclaimer{margin-top:18px; font-size:12.5px; line-height:1.6; max-width:80ch; opacity:.8}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr; gap:30px; padding:48px 0 36px}
+    .hero-shot{order:-1}
+    .grid{grid-template-columns:1fr 1fr}
+    .gallery{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr}
+    .nav .btn-label{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <img src="assets/logo.png" alt="OnlyCars">
+    <a class="btn btn-gold" data-cta="header"><span class="btn-label">Get the app</span>
+      <span aria-hidden="true">→</span></a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">A swipeable car discovery game</span>
+        <h1>Swipe. Collect.<br>Show off your garage.</h1>
+        <p class="lede">Discover a curated feed of cars, save the ones you love to your
+          garage, and level up your Collector profile by rarity — from everyday rides to
+          one-in-a-thousand machines.</p>
+        <div class="cta-row">
+          <a class="appstore" data-cta="hero" aria-label="Download OnlyCars on the App Store">
+            <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
+            <span><span class="s">Download on the</span><span class="b">App Store</span></span>
+          </a>
+          <span class="cta-note">Free · iPhone &amp; iPad</span>
+        </div>
+      </div>
+      <div class="hero-shot">
+        <img src="assets/shot1.jpg" alt="OnlyCars garage with cars sorted by rarity" loading="eager">
+      </div>
+    </div>
+  </div>
+
+  <!-- RARITY STRIP -->
+  <div class="wrap">
+    <div class="rarity">
+      <span class="chip"><span class="dot" style="background:#2dd4bf"></span>Mythic</span>
+      <span class="chip"><span class="dot" style="background:#f5c542"></span>Legendary</span>
+      <span class="chip"><span class="dot" style="background:#4aa8ff"></span>Rare</span>
+      <span class="chip"><span class="dot" style="background:#a855f7"></span>Neon Pulse</span>
+      <span class="chip"><span class="dot" style="background:#34d399"></span>Wilderness</span>
+      <span class="chip"><span class="dot" style="background:#fbbf24"></span>Collector</span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="wrap">
+    <div class="kicker">How it works</div>
+    <h2>A car collection that grows with every swipe</h2>
+    <p class="sub">Simple to pick up, easy to lose an evening to.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/><path d="M11 18l-6-6 6-6" opacity=".5"/></svg></div>
+        <h3>Swipe to discover</h3>
+        <p>Flick through an endless, curated feed of cars in any of four directions.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></div>
+        <h3>Build your garage</h3>
+        <p>Save your favourites to a personal garage you can revisit and show off.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-4 4 1 6-5-3-5 3 1-6-4-4 5-1z"/></svg></div>
+        <h3>Collect by rarity</h3>
+        <p>From common finds to Mythic one-offs — chase the cars worth bragging about.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 4h12v4a6 6 0 0 1-12 0z"/><path d="M9 18h6M10 22h4"/></svg></div>
+        <h3>Complete collections</h3>
+        <p>Finish themed sets, earn achievements, and climb your Collector level.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="wrap">
+    <div class="kicker">A look inside</div>
+    <h2>Every car, beautifully rendered</h2>
+    <p class="sub">Hundreds of unique cars across worlds, scenes, and rarities.</p>
+    <div class="gallery">
+      <img src="assets/shot5.jpg" alt="Rare car collection screen" loading="lazy">
+      <img src="assets/shot6.jpg" alt="World map of collections" loading="lazy">
+      <img src="assets/shot3.jpg" alt="Scene collections" loading="lazy">
+      <img src="assets/shot4.jpg" alt="Themed car collections" loading="lazy">
+      <img src="assets/shot7.jpg" alt="Wilderness collection detail" loading="lazy">
+      <img src="assets/shot8.jpg" alt="Achievements screen" loading="lazy">
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>Start your collection today</h2>
+      <p class="sub">Free to play. Your garage is waiting.</p>
+      <div class="btns">
+        <a class="appstore" data-cta="footer" aria-label="Download OnlyCars on the App Store">
+          <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
+          <span><span class="s">Download on the</span><span class="b">App Store</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="frow">
+    <div>
+      <a href="https://martingaleproject2025.github.io/onlycars-legal/privacy.html">Privacy</a>
+      <a href="https://martingaleproject2025.github.io/onlycars-legal/terms.html">Terms</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">EULA</a>
+      <a href="mailto:only.cars.app.ai@gmail.com">Support</a>
+    </div>
+    <div>© 2026 OnlyCars</div>
+  </div>
+  <p class="disclaimer">Car images are illustrative and created for entertainment and
+    creative purposes, including imagery generated using artificial intelligence. OnlyCars is
+    an independent app and is not affiliated with, endorsed by, or sponsored by any vehicle
+    manufacturer or brand.</p>
+</footer>
+
+<script>
+  /* Wire every [data-cta] as a real App Store link + fire a Pinterest
+     conversion event on click (no-op until a Tag ID is configured). */
+  (function(){
+    var url = window.ONLYCARS.APP_STORE_URL;
+    document.querySelectorAll("[data-cta]").forEach(function(el){
+      el.setAttribute("href", url);
+      el.setAttribute("rel", "noopener");
+      el.addEventListener("click", function(){
+        try { if (window.pintrk) pintrk("track","lead",{lead_type: el.dataset.cta}); } catch(e){}
+      });
+    });
+  })();
+</script>
+</body>
+</html>
