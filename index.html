@@ -8,17 +8,18 @@
      OnlyCars · landing page  (self-contained, no build step)
      Deploy: drop this folder on any static host (GitHub Pages / Cloudflare
      Pages / Vercel). Edit the two values in CONFIG below before going live.
+     Design spec + rationale: LANDING_REQUIREMENTS.md
 ────────────────────────────────────────────────────────────────────────── -->
 
 <title>OnlyCars — Swipe. Collect. Show off your garage.</title>
 <meta name="description" content="OnlyCars is a swipeable car discovery game. Swipe through a curated feed of cars, save your favourites to a personal garage, and level up your collection by rarity. Free on iOS.">
 <link rel="canonical" href="https://onlycars.app/">
-<meta name="theme-color" content="#070b18">
+<meta name="theme-color" content="#04060e">
 
 <!-- Open Graph / Pinterest rich preview -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="OnlyCars — Swipe. Collect. Show off your garage.">
-<meta property="og:description" content="A swipeable car discovery game. Discover, collect, and show off rare cars. Free on iOS.">
+<meta property="og:description" content="A swipeable car discovery game. Discover, collect, and show off rare cars across five worlds. Free on iOS.">
 <meta property="og:image" content="assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -54,127 +55,244 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
 
 <style>
   :root{
-    --bg:#070b18; --bg2:#04060e; --ink:#e9eef9; --mut:#93a3c4;
-    --gold:#f5c542; --blue:#4aa8ff; --teal:#2dd4bf;
-    --line:rgba(255,255,255,.09); --panel:rgba(255,255,255,.04);
-    --maxw:1120px;
+    --bg:#070b18; --bg2:#04060e; --ink:#eef2fb; --mut:#93a3c4;
+    --gold:#f5c542; --blue:#4aa8ff; --teal:#2dd4bf; --purple:#a855f7;
+    --green:#34d399; --orange:#fb7233; --grey:#9ca3af;
+    --line:rgba(255,255,255,.09); --panel:rgba(255,255,255,.045);
+    --panel2:rgba(255,255,255,.07); --maxw:1160px;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  html{background:var(--bg2)}
+  html{scroll-behavior:smooth; background:var(--bg2); overflow-x:clip}
   body{
-    margin:0; color:var(--ink); background-color:var(--bg2);
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background-image:
-      radial-gradient(900px 600px at 15% 0, rgba(74,168,255,.16), transparent 60%),
-      radial-gradient(800px 600px at 95% 360px, rgba(245,197,66,.12), transparent 55%),
-      linear-gradient(180deg, var(--bg), var(--bg2));
-    background-repeat:no-repeat; background-size:100% 100%;
-    -webkit-font-smoothing:antialiased; line-height:1.5;
+    margin:0; color:var(--ink); background:var(--bg2); width:100%; max-width:100%;
+    font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5; overflow-x:clip;
   }
   a{color:inherit}
-  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+  img{max-width:100%}
+  /* horizontal-only longhand so it never clobbers section vertical padding
+     (a `.wrap` class beats the `section` type selector on the padding shorthand) */
+  .wrap{max-width:var(--maxw); margin:0 auto; padding-left:22px; padding-right:22px}
   .muted{color:var(--mut)}
 
+  /* animated ambient background */
+  .bgfx{position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none}
+  .blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:.5;
+    will-change:transform}
+  .blob.b1{width:620px; height:620px; left:-120px; top:-140px;
+    background:radial-gradient(closest-side,rgba(74,168,255,.55),transparent);
+    animation:drift1 22s ease-in-out infinite}
+  .blob.b2{width:560px; height:560px; right:-140px; top:120px;
+    background:radial-gradient(closest-side,rgba(245,197,66,.42),transparent);
+    animation:drift2 26s ease-in-out infinite}
+  .blob.b3{width:520px; height:520px; left:30%; top:820px;
+    background:radial-gradient(closest-side,rgba(168,85,247,.38),transparent);
+    animation:drift1 30s ease-in-out infinite reverse}
+  .grain{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.35;
+    background:linear-gradient(180deg,transparent, var(--bg2) 92%)}
+  @keyframes drift1{50%{transform:translate(60px,50px) scale(1.08)}}
+  @keyframes drift2{50%{transform:translate(-70px,40px) scale(1.1)}}
+
   /* header */
-  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
-    background:rgba(7,11,24,.6); border-bottom:1px solid var(--line)}
-  .nav{display:flex; align-items:center; justify-content:space-between; height:62px}
-  .nav img{height:26px; display:block}
+  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(14px);
+    background:rgba(4,6,14,.55); border-bottom:1px solid var(--line)}
+  .nav{display:flex; align-items:center; justify-content:space-between; height:64px}
+  .nav .logo{height:27px; display:block}
   .btn{display:inline-flex; align-items:center; gap:8px; border:0; cursor:pointer;
     font-weight:700; font-size:15px; padding:11px 18px; border-radius:999px;
-    text-decoration:none; transition:transform .12s ease, box-shadow .12s ease}
+    text-decoration:none; transition:transform .14s ease, box-shadow .14s ease}
   .btn:hover{transform:translateY(-1px)}
-  .btn-gold{background:linear-gradient(180deg,#ffd861,#f0b72e); color:#1a1407;
-    box-shadow:0 8px 24px rgba(245,197,66,.28)}
-  .btn-ghost{background:var(--panel); color:var(--ink); border:1px solid var(--line)}
+  .btn-gold{background:linear-gradient(180deg,#ffe27a,#f0b72e); color:#1a1407;
+    box-shadow:0 8px 24px rgba(245,197,66,.32)}
+  .btn-gold:hover{box-shadow:0 12px 32px rgba(245,197,66,.45)}
 
-  /* App Store badge button */
+  /* App Store badge */
   .appstore{display:inline-flex; align-items:center; gap:11px; text-decoration:none;
-    background:#000; color:#fff; border:1px solid rgba(255,255,255,.18);
-    padding:12px 20px; border-radius:14px; transition:transform .12s ease}
-  .appstore:hover{transform:translateY(-1px)}
+    background:#000; color:#fff; border:1px solid rgba(255,255,255,.22);
+    padding:12px 22px; border-radius:14px; transition:transform .14s ease, box-shadow .14s ease}
+  .appstore:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.5)}
   .appstore svg{width:26px; height:26px; flex:0 0 auto}
-  .appstore .s{font-size:11px; letter-spacing:.04em; opacity:.85; line-height:1}
-  .appstore .b{font-size:19px; font-weight:600; line-height:1.15; margin-top:2px}
+  .appstore .s{display:block; font-size:11px; letter-spacing:.04em; opacity:.85; line-height:1}
+  .appstore .b{display:block; font-size:19px; font-weight:600; line-height:1.15; margin-top:2px}
 
   /* hero */
-  .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:46px; align-items:center;
-    padding:74px 0 56px}
-  .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.12em;
-    text-transform:uppercase; color:var(--blue); margin-bottom:18px}
-  h1{font-size:clamp(38px,6vw,62px); line-height:1.04; margin:0 0 18px; letter-spacing:-.02em}
-  .lede{font-size:clamp(17px,2.3vw,20px); color:#c4d0e6; max-width:34ch; margin:0 0 28px}
+  .hero{display:grid; grid-template-columns:1.02fr .98fr; gap:44px; align-items:center;
+    padding:70px 0 44px}
+  .hero>*{min-width:0}  /* let grid tracks shrink; stops the 2778px hero shot overflowing */
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:700;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--blue);
+    background:rgba(74,168,255,.1); border:1px solid rgba(74,168,255,.28);
+    padding:7px 13px; border-radius:999px; margin-bottom:22px}
+  .eyebrow .pulse{width:7px; height:7px; border-radius:50%; background:var(--blue);
+    box-shadow:0 0 0 0 rgba(74,168,255,.6); animation:pulse 2.4s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(74,168,255,0)}100%{box-shadow:0 0 0 0 rgba(74,168,255,0)}}
+  h1{font-size:clamp(40px,6.4vw,68px); line-height:1.02; margin:0 0 20px; letter-spacing:-.03em;
+    font-weight:800}
+  h1 .grad{background:linear-gradient(110deg,#ffe27a,#f0b72e); -webkit-background-clip:text;
+    background-clip:text; -webkit-text-fill-color:transparent}
+  .lede{font-size:clamp(17px,2.3vw,20px); color:#c4d0e6; max-width:36ch; margin:0 0 30px}
   .cta-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
   .cta-note{font-size:13px; color:var(--mut)}
-  .hero-shot{position:relative}
-  .hero-shot img{width:100%; border-radius:18px; display:block;
-    border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,.55)}
-  .hero-shot::after{content:""; position:absolute; inset:-12% -8% auto -8%; height:60%;
-    background:radial-gradient(closest-side, rgba(74,168,255,.35), transparent);
-    filter:blur(30px); z-index:-1}
+  .trust{display:flex; align-items:center; gap:14px; margin-top:26px; color:var(--mut);
+    font-size:13.5px; flex-wrap:wrap}
+  .stars{color:var(--gold); letter-spacing:2px; font-size:15px}
 
-  /* rarity strip */
-  .rarity{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-    padding:8px 0 4px}
-  .chip{display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
-    letter-spacing:.04em; padding:8px 14px; border-radius:999px;
-    background:var(--panel); border:1px solid var(--line)}
-  .dot{width:10px; height:10px; border-radius:3px; transform:rotate(45deg)}
+  /* device mockup (app is landscape) */
+  .stage{position:relative; perspective:1600px; min-width:0}
+  .device{position:relative; border-radius:30px; padding:12px;
+    background:linear-gradient(160deg,#20263a,#0a0e1b); border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14);
+    transform:rotateY(-13deg) rotateX(5deg) rotate(-1deg); transform-style:preserve-3d;
+    animation:float 7s ease-in-out infinite}
+  @keyframes float{50%{transform:rotateY(-11deg) rotateX(4deg) translateY(-12px)}}
+  .device::before{content:""; position:absolute; top:50%; left:6px; width:4px; height:52px;
+    transform:translateY(-50%); border-radius:4px; background:rgba(255,255,255,.16)}
+  .device-screen{position:relative; border-radius:20px; overflow:hidden; display:block;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
+  .device-screen img{width:100%; display:block}
+  .device-cam{position:absolute; top:50%; right:7px; width:6px; height:6px; border-radius:50%;
+    transform:translateY(-50%); background:#05070d; box-shadow:0 0 0 2px rgba(255,255,255,.06)}
+  /* vertical bleed only — horizontal 0 so the halo box never forces page-wide
+     scroll on mobile (blur still spreads the glow softly past the sides). */
+  .glowcar{position:absolute; inset:-16% 0 -22% 0; z-index:-1;
+    background:radial-gradient(closest-side,rgba(45,212,191,.4),transparent 70%);
+    filter:blur(26px)}
+  /* floating chips over the device */
+  .float-chip{position:absolute; z-index:3; display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:800; letter-spacing:.03em; padding:9px 14px; border-radius:999px;
+    background:rgba(8,12,22,.82); backdrop-filter:blur(6px); border:1px solid var(--line);
+    box-shadow:0 12px 30px rgba(0,0,0,.5)}
+  .float-chip .dot{width:9px;height:9px;border-radius:3px;transform:rotate(45deg)}
+  .fc1{top:-14px; left:-6px; animation:float 6s ease-in-out infinite}
+  .fc2{bottom:34px; right:-18px; animation:float 8s ease-in-out .6s infinite}
+  .fc-card{position:absolute; z-index:3; right:-26px; top:16px; width:132px; border-radius:14px;
+    overflow:hidden; border:1px solid rgba(45,212,191,.6); box-shadow:0 18px 40px rgba(0,0,0,.55);
+    animation:float 9s ease-in-out .3s infinite}
+  .fc-card img{width:100%; display:block}
+  .fc-card span{position:absolute; left:8px; bottom:7px; font-size:11px; font-weight:800;
+    letter-spacing:.04em; color:var(--gold); text-shadow:0 1px 4px #000}
+
+  /* stats strip */
+  .stats{display:flex; justify-content:center; gap:0; flex-wrap:wrap;
+    border:1px solid var(--line); border-radius:18px; background:var(--panel);
+    backdrop-filter:blur(8px); overflow:hidden; margin:22px 0 6px}
+  .stat{flex:1 1 0; min-width:150px; text-align:center; padding:20px 14px;
+    border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat b{display:block; font-size:26px; font-weight:800; letter-spacing:-.01em}
+  .stat span{font-size:13px; color:var(--mut)}
 
   /* sections */
-  section{padding:54px 0}
-  .kicker{text-align:center; font-size:13px; font-weight:700; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--gold); margin-bottom:10px}
-  h2{font-size:clamp(26px,4vw,38px); text-align:center; margin:0 0 12px; letter-spacing:-.02em}
-  .sub{text-align:center; color:var(--mut); max-width:56ch; margin:0 auto 34px}
+  section{padding-top:72px; padding-bottom:72px; position:relative}
+  .kicker{text-align:center; font-size:12.5px; font-weight:800; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:12px}
+  h2{font-size:clamp(28px,4.2vw,42px); text-align:center; margin:0 0 14px; letter-spacing:-.025em;
+    font-weight:800}
+  .sub{text-align:center; color:var(--mut); max-width:58ch; margin:0 auto 40px; font-size:16.5px}
 
   /* feature cards */
   .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
-  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px;
-    padding:22px}
-  .card .ic{width:42px; height:42px; border-radius:11px; display:grid; place-items:center;
-    background:rgba(74,168,255,.12); margin-bottom:14px}
-  .card .ic svg{width:22px; height:22px; stroke:var(--blue); fill:none; stroke-width:2}
-  .card h3{margin:0 0 6px; font-size:17px}
+  .card{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:24px; transition:transform .18s ease, border-color .18s ease, background .18s ease}
+  .card:hover{transform:translateY(-4px); border-color:rgba(74,168,255,.4); background:var(--panel2)}
+  .card .ic{width:46px; height:46px; border-radius:12px; display:grid; place-items:center;
+    background:rgba(74,168,255,.14); margin-bottom:16px}
+  .card .ic svg{width:23px; height:23px; stroke:var(--blue); fill:none; stroke-width:2;
+    stroke-linecap:round; stroke-linejoin:round}
+  .card h3{margin:0 0 7px; font-size:17.5px}
   .card p{margin:0; font-size:14.5px; color:var(--mut)}
 
-  /* gallery */
-  .gallery{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-  .gallery img{width:100%; border-radius:14px; display:block; border:1px solid var(--line);
-    box-shadow:0 16px 40px rgba(0,0,0,.4)}
+  /* rarity showcase */
+  .rar{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  .rtile{position:relative; border-radius:18px; overflow:hidden; border:1px solid var(--line);
+    aspect-ratio:4/3; transition:transform .18s ease, box-shadow .18s ease}
+  .rtile img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease}
+  .rtile:hover{transform:translateY(-5px)}
+  .rtile:hover img{transform:scale(1.06)}
+  .rtile::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg,transparent 42%,rgba(4,6,14,.86))}
+  .rtile .meta{position:absolute; left:14px; bottom:13px; z-index:2}
+  .rtile .rchip{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800;
+    letter-spacing:.05em; padding:6px 11px; border-radius:999px; background:rgba(4,6,14,.6);
+    border:1px solid currentColor}
+  .rtile .rchip .dot{width:8px;height:8px;border-radius:2px;transform:rotate(45deg);
+    background:currentColor}
+  .rtile .rname{display:block; margin-top:8px; font-size:15px; font-weight:700; color:#fff}
+
+  /* worlds */
+  .worlds{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  .world{position:relative; border-radius:16px; overflow:hidden; aspect-ratio:3/4;
+    border:1px solid var(--line); transition:transform .18s ease}
+  .world:hover{transform:translateY(-5px)}
+  .world img{width:100%; height:100%; object-fit:cover; display:block}
+  .world::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg,rgba(4,6,14,.5) 0%,transparent 34%,rgba(4,6,14,.9))}
+  .world span{position:absolute; left:0; right:0; bottom:14px; text-align:center; z-index:2;
+    font-size:14px; font-weight:800; letter-spacing:.02em}
+
+  /* gallery — landscape device carousel */
+  .rail{display:flex; gap:20px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:6px 22px 20px; margin:0 -22px; -webkit-overflow-scrolling:touch}
+  .rail::-webkit-scrollbar{height:0}
+  .shot{scroll-snap-align:center; flex:0 0 clamp(300px,80vw,720px); border-radius:22px;
+    padding:10px; background:linear-gradient(160deg,#20263a,#0a0e1b);
+    border:1px solid rgba(255,255,255,.12); box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  .shot img{width:100%; border-radius:14px; display:block}
+  .railhint{text-align:center; color:var(--mut); font-size:13px; margin-top:6px}
 
   /* final cta */
-  .final{text-align:center; background:
-      radial-gradient(600px 300px at 50% 0%, rgba(245,197,66,.14), transparent 60%);
-    border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
-  .final .btns{display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:24px}
+  .final{text-align:center; position:relative; margin-top:20px;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:radial-gradient(700px 320px at 50% 0%, rgba(245,197,66,.16), transparent 62%)}
+  .final .btns{display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:26px}
 
   /* footer */
-  footer{padding:42px 0; color:var(--mut); font-size:13.5px}
+  footer{padding:46px 0; color:var(--mut); font-size:13.5px}
   .frow{display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap;
-    align-items:center; border-top:1px solid var(--line); padding-top:24px}
+    align-items:center; border-top:1px solid var(--line); padding-top:26px}
   footer a{color:var(--mut); text-decoration:none; margin-right:18px}
   footer a:hover{color:var(--ink)}
   .disclaimer{margin-top:18px; font-size:12.5px; line-height:1.6; max-width:80ch; opacity:.8}
 
-  @media (max-width:860px){
-    .hero{grid-template-columns:1fr; gap:30px; padding:48px 0 36px}
-    .hero-shot{order:-1}
+  /* scroll reveal */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1; transform:none}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr; gap:34px; padding:44px 0 24px}
+    /* flatten the mockup + tuck floats inside the viewport → no horizontal overflow */
+    .stage{order:-1; max-width:520px; margin:0 auto; width:100%}
+    .device{transform:none; animation:none}
+    .float-chip{animation:none}
+    .float-chip.fc1{left:6px; top:-10px}
+    .float-chip.fc2{right:6px}
+    .fc-card{display:none}
     .grid{grid-template-columns:1fr 1fr}
-    .gallery{grid-template-columns:1fr}
+    .rar{grid-template-columns:repeat(3,1fr)}
+    .worlds{grid-template-columns:repeat(3,1fr)}
   }
   @media (max-width:520px){
-    .grid{grid-template-columns:1fr}
-    .nav .btn-label{display:none}
+    .grid{grid-template-columns:1fr 1fr}
+    .rar{grid-template-columns:repeat(2,1fr)}
+    .worlds{grid-template-columns:repeat(2,1fr)}
+    .stat{min-width:50%}
+    .fc-card{display:none}
+    .nav .btn .btn-label{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .blob,.device,.float-chip,.fc-card{animation:none}
+    .reveal{transition:none; opacity:1; transform:none}
   }
 </style>
 </head>
 <body>
 
+<div class="bgfx"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+<div class="grain"></div>
+
 <header>
   <div class="wrap nav">
-    <img src="assets/logo.png" alt="OnlyCars">
+    <img class="logo" src="assets/logo.png" alt="OnlyCars">
     <a class="btn btn-gold" data-cta="header"><span class="btn-label">Get the app</span>
       <span aria-hidden="true">→</span></a>
   </div>
@@ -184,12 +302,11 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
   <!-- HERO -->
   <div class="wrap">
     <div class="hero">
-      <div>
-        <span class="eyebrow">A swipeable car discovery game</span>
-        <h1>Swipe. Collect.<br>Show off your garage.</h1>
-        <p class="lede">Discover a curated feed of cars, save the ones you love to your
-          garage, and level up your Collector profile by rarity — from everyday rides to
-          one-in-a-thousand machines.</p>
+      <div class="reveal">
+        <span class="eyebrow"><span class="pulse"></span>A swipeable car discovery game</span>
+        <h1>Swipe. Collect.<br>Show off your <span class="grad">garage.</span></h1>
+        <p class="lede">Discover a curated feed of cars, keep the ones you love, and level up
+          your Collector profile by rarity — from everyday rides to one-in-a-thousand machines.</p>
         <div class="cta-row">
           <a class="appstore" data-cta="hero" aria-label="Download OnlyCars on the App Store">
             <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
@@ -197,47 +314,64 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
           </a>
           <span class="cta-note">Free · iPhone &amp; iPad</span>
         </div>
+        <div class="trust">
+          <span class="stars">★★★★★</span>
+          <span>Made for car lovers &amp; collectors</span>
+        </div>
       </div>
-      <div class="hero-shot">
-        <img src="assets/shot1.jpg" alt="OnlyCars garage with cars sorted by rarity" loading="eager">
+
+      <div class="stage reveal">
+        <div class="glowcar"></div>
+        <div class="device">
+          <div class="device-screen">
+            <img src="assets/shot1.jpg" alt="OnlyCars garage, cars graded by rarity" loading="eager">
+          </div>
+          <span class="device-cam"></span>
+        </div>
+        <span class="float-chip fc1"><span class="dot" style="background:var(--teal)"></span>Mythic</span>
+        <span class="float-chip fc2"><span class="dot" style="background:var(--blue)"></span>Rare find</span>
+        <div class="fc-card">
+          <img src="assets/car_mythic.jpg" alt="A Mythic car">
+          <span style="color:var(--teal)">MYTHIC</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- RARITY STRIP -->
-  <div class="wrap">
-    <div class="rarity">
-      <span class="chip"><span class="dot" style="background:#2dd4bf"></span>Mythic</span>
-      <span class="chip"><span class="dot" style="background:#f5c542"></span>Legendary</span>
-      <span class="chip"><span class="dot" style="background:#4aa8ff"></span>Rare</span>
-      <span class="chip"><span class="dot" style="background:#a855f7"></span>Neon Pulse</span>
-      <span class="chip"><span class="dot" style="background:#34d399"></span>Wilderness</span>
-      <span class="chip"><span class="dot" style="background:#fbbf24"></span>Collector</span>
+  <!-- STATS -->
+  <div class="wrap reveal">
+    <div class="stats">
+      <div class="stat"><b>Thousands</b><span>of unique cars</span></div>
+      <div class="stat"><b>10+</b><span>worlds to explore</span></div>
+      <div class="stat"><b>5</b><span>rarity tiers to chase</span></div>
+      <div class="stat"><b>∞</b><span>2-D swipes, always free</span></div>
     </div>
   </div>
 
   <!-- FEATURES -->
   <section class="wrap">
-    <div class="kicker">How it works</div>
-    <h2>A car collection that grows with every swipe</h2>
-    <p class="sub">Simple to pick up, easy to lose an evening to.</p>
+    <div class="reveal">
+      <div class="kicker">How it works</div>
+      <h2>A collection that grows with every swipe</h2>
+      <p class="sub">Simple to pick up, easy to lose an evening to.</p>
+    </div>
     <div class="grid">
-      <div class="card">
+      <div class="card reveal">
         <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/><path d="M11 18l-6-6 6-6" opacity=".5"/></svg></div>
         <h3>Swipe to discover</h3>
         <p>Flick through an endless, curated feed of cars in any of four directions.</p>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></div>
         <h3>Build your garage</h3>
         <p>Save your favourites to a personal garage you can revisit and show off.</p>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-4 4 1 6-5-3-5 3 1-6-4-4 5-1z"/></svg></div>
         <h3>Collect by rarity</h3>
-        <p>From common finds to Mythic one-offs — chase the cars worth bragging about.</p>
+        <p>From Basic finds to Mythic one-offs — chase the cars worth bragging about.</p>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 4h12v4a6 6 0 0 1-12 0z"/><path d="M9 18h6M10 22h4"/></svg></div>
         <h3>Complete collections</h3>
         <p>Finish themed sets, earn achievements, and climb your Collector level.</p>
@@ -245,26 +379,84 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
     </div>
   </section>
 
-  <!-- GALLERY -->
+  <!-- RARITY SHOWCASE -->
   <section class="wrap">
-    <div class="kicker">A look inside</div>
-    <h2>Every car, beautifully rendered</h2>
-    <p class="sub">Hundreds of unique cars across worlds, scenes, and rarities.</p>
-    <div class="gallery">
-      <img src="assets/shot5.jpg" alt="Rare car collection screen" loading="lazy">
-      <img src="assets/shot6.jpg" alt="World map of collections" loading="lazy">
-      <img src="assets/shot3.jpg" alt="Scene collections" loading="lazy">
-      <img src="assets/shot4.jpg" alt="Themed car collections" loading="lazy">
-      <img src="assets/shot7.jpg" alt="Wilderness collection detail" loading="lazy">
-      <img src="assets/shot8.jpg" alt="Achievements screen" loading="lazy">
+    <div class="reveal">
+      <div class="kicker">The thrill of the pull</div>
+      <h2>Grade every find by rarity</h2>
+      <p class="sub">Most cars are Basic. A few are not — hunt the ones that make a garage.</p>
+    </div>
+    <div class="rar">
+      <div class="rtile reveal" style="color:var(--grey)">
+        <img src="assets/car_fun.jpg" alt="A Basic car" loading="lazy">
+        <div class="meta"><span class="rchip"><span class="dot"></span>BASIC</span>
+          <span class="rname">Everyday charmers</span></div>
+      </div>
+      <div class="rtile reveal" style="color:var(--blue)">
+        <img src="assets/car_rare.jpg" alt="A Rare car" loading="lazy">
+        <div class="meta"><span class="rchip"><span class="dot"></span>RARE</span>
+          <span class="rname">The select few</span></div>
+      </div>
+      <div class="rtile reveal" style="color:var(--purple)">
+        <img src="assets/car_epic.jpg" alt="An Epic car" loading="lazy">
+        <div class="meta"><span class="rchip"><span class="dot"></span>EPIC</span>
+          <span class="rname">A serious flex</span></div>
+      </div>
+      <div class="rtile reveal" style="color:var(--gold)">
+        <img src="assets/car_legend.jpg" alt="A Legendary car" loading="lazy">
+        <div class="meta"><span class="rchip"><span class="dot"></span>LEGENDARY</span>
+          <span class="rname">Showroom royalty</span></div>
+      </div>
+      <div class="rtile reveal" style="color:var(--teal)">
+        <img src="assets/car_mythic.jpg" alt="A Mythic car" loading="lazy">
+        <div class="meta"><span class="rchip"><span class="dot"></span>MYTHIC</span>
+          <span class="rname">One in a thousand</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORLDS -->
+  <section class="wrap">
+    <div class="reveal">
+      <div class="kicker">Explore</div>
+      <h2>Collect across 10+ worlds</h2>
+      <p class="sub">Each world has its own cars, scenes, and collections to complete — here are five.</p>
+    </div>
+    <div class="worlds">
+      <div class="world reveal"><img src="assets/world_green.jpg" alt="Deep Green world" loading="lazy"><span style="color:var(--green)">Deep Green</span></div>
+      <div class="world reveal"><img src="assets/world_rift.jpg" alt="Grand Rift world" loading="lazy"><span style="color:#cbd3e0">Grand Rift</span></div>
+      <div class="world reveal"><img src="assets/world_neon.jpg" alt="Neon Pulse world" loading="lazy"><span style="color:var(--purple)">Neon Pulse</span></div>
+      <div class="world reveal"><img src="assets/world_lava.jpg" alt="Molten Core world" loading="lazy"><span style="color:var(--orange)">Molten Core</span></div>
+      <div class="world reveal"><img src="assets/world_earth.jpg" alt="Raw Earth world" loading="lazy"><span style="color:#d8c48a">Raw Earth</span></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section>
+    <div class="wrap reveal">
+      <div class="kicker">A look inside</div>
+      <h2>Every car, beautifully rendered</h2>
+      <p class="sub">Hundreds of unique cars across worlds, scenes, and rarities.</p>
+    </div>
+    <div class="wrap">
+      <div class="rail">
+        <div class="shot reveal"><img src="assets/shot1.jpg" alt="Garage graded by rarity" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot5.jpg" alt="Rare collection screen" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot3.jpg" alt="Scene worlds" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot4.jpg" alt="Themed collections" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot6.jpg" alt="Collector journey map" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot7.jpg" alt="Wilderness collection detail" loading="lazy"></div>
+        <div class="shot reveal"><img src="assets/shot8.jpg" alt="Achievements screen" loading="lazy"></div>
+      </div>
+      <p class="railhint">← swipe to browse →</p>
     </div>
   </section>
 
   <!-- FINAL CTA -->
   <section class="final">
-    <div class="wrap">
+    <div class="wrap reveal">
       <h2>Start your collection today</h2>
-      <p class="sub">Free to play. Your garage is waiting.</p>
+      <p class="sub">Free to play. Your dream garage is one swipe away.</p>
       <div class="btns">
         <a class="appstore" data-cta="footer" aria-label="Download OnlyCars on the App Store">
           <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
@@ -303,6 +495,17 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
         try { if (window.pintrk) pintrk("track","lead",{lead_type: el.dataset.cta}); } catch(e){}
       });
     });
+
+    /* Scroll-reveal — progressive enhancement (content is visible without JS). */
+    var els = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {rootMargin:"0px 0px -8% 0px", threshold:.08});
+      els.forEach(function(el, i){ el.style.transitionDelay = (Math.min(i%4,3)*60)+"ms"; io.observe(el); });
+    } else {
+      els.forEach(function(el){ el.classList.add("in"); });
+    }
   })();
 </script>
 </body>
