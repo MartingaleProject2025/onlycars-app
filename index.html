@@ -38,7 +38,11 @@
       Leave "" until you have it; tracking stays dormant (no errors).
 ────────────────────────────────────────────────────────────────────────────*/
 window.ONLYCARS = {
-  APP_STORE_URL: "https://apps.apple.com/us/app/onlycars-dream-garage/id6761687910?ct=pinterest", // live · keep ?ct=pinterest for App Analytics
+  // Empty while the App Store listing is down. Every CTA renders as a
+  // non-clickable "Coming soon" pill until this is a real https
+  // apps.apple.com link again. Restore the full campaign link (keep
+  // ?ct=pinterest for App Analytics) and the buttons re-arm themselves.
+  APP_STORE_URL: "",
   PINTEREST_TAG_ID: "" // TODO paste Pinterest Tag ID, e.g. "2613xxxxxxxxx"
 };
 
@@ -114,6 +118,12 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
   .appstore svg{width:26px; height:26px; flex:0 0 auto}
   .appstore .s{display:block; font-size:11px; letter-spacing:.04em; opacity:.85; line-height:1}
   .appstore .b{display:block; font-size:19px; font-weight:600; line-height:1.15; margin-top:2px}
+  /* "Coming soon" state: listing pulled or link not set. Matches OnlyDraws. */
+  .appstore.soon{cursor:default; background:#16161f; border-color:var(--line)}
+  .appstore.soon:hover{transform:none; box-shadow:none}
+  .btn-gold.soon{background:#20222c; color:var(--mut); cursor:default; box-shadow:none}
+  .btn-gold.soon:hover{box-shadow:none}
+  .btn-gold.soon span[aria-hidden]{display:none}
 
   /* hero */
   .hero{display:grid; grid-template-columns:1.02fr .98fr; gap:44px; align-items:center;
@@ -293,7 +303,7 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
 <header>
   <div class="wrap nav">
     <img class="logo" src="assets/logo.png" alt="OnlyCars">
-    <a class="btn btn-gold" data-cta="header"><span class="btn-label">Get the app</span>
+    <a class="btn btn-gold soon" data-cta="header" role="link" aria-disabled="true"><span class="btn-label">Coming soon</span>
       <span aria-hidden="true">→</span></a>
   </div>
 </header>
@@ -308,9 +318,9 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
         <p class="lede">Discover a curated feed of cars, keep the ones you love, and level up
           your Collector profile by rarity — from everyday rides to one-in-a-thousand machines.</p>
         <div class="cta-row">
-          <a class="appstore" data-cta="hero" aria-label="Download OnlyCars on the App Store">
+          <a class="appstore soon" data-cta="hero" role="link" aria-disabled="true" aria-label="OnlyCars on the App Store">
             <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
-            <span><span class="s">Download on the</span><span class="b">App Store</span></span>
+            <span><span class="s">Coming soon to the</span><span class="b">App Store</span></span>
           </a>
           <span class="cta-note">Free · iPhone &amp; iPad</span>
         </div>
@@ -458,9 +468,9 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
       <h2>Start your collection today</h2>
       <p class="sub">Free to play. Your dream garage is one swipe away.</p>
       <div class="btns">
-        <a class="appstore" data-cta="footer" aria-label="Download OnlyCars on the App Store">
+        <a class="appstore soon" data-cta="footer" role="link" aria-disabled="true" aria-label="OnlyCars on the App Store">
           <svg viewBox="0 0 384 512" fill="#fff" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C73.3 141.6 24 184.8 24 272.4c0 25.9 4.7 52.6 14.2 80.1 12.6 36.1 58 124.6 105.4 123.1 24.8-.6 42.3-17.6 74.5-17.6 31.3 0 47.5 17.6 76.4 17.6 47.8-.7 88.9-81.2 100.9-117.4-64.1-30.2-60.9-88.5-60.6-89.5zM262.9 89.9c26.9-31.9 24.5-60.9 23.7-71.4-23.8 1.4-51.3 16.2-67 34.5-17.3 19.6-27.5 43.8-25.3 71 25.7 2 49.1-11.2 68.6-34.1z"/></svg>
-          <span><span class="s">Download on the</span><span class="b">App Store</span></span>
+          <span><span class="s">Coming soon to the</span><span class="b">App Store</span></span>
         </a>
       </div>
     </div>
@@ -487,10 +497,22 @@ if (window.ONLYCARS.PINTEREST_TAG_ID) {
   /* Wire every [data-cta] as a real App Store link + fire a Pinterest
      conversion event on click (no-op until a Tag ID is configured). */
   (function(){
-    var url = window.ONLYCARS.APP_STORE_URL;
-    document.querySelectorAll("[data-cta]").forEach(function(el){
+    /* Buttons ship as non-clickable "Coming soon" pills and arm themselves only
+       when APP_STORE_URL is a real https apps.apple.com link. A pulled listing
+       or a typo therefore cannot render a dead download button. */
+    var url = window.ONLYCARS.APP_STORE_URL, live = false;
+    try { var u = new URL(url); live = u.protocol === "https:" && u.hostname === "apps.apple.com"; } catch(e){}
+    if (live) document.querySelectorAll("[data-cta]").forEach(function(el){
       el.setAttribute("href", url);
       el.setAttribute("rel", "noopener");
+      el.removeAttribute("aria-disabled");
+      el.classList.remove("soon");
+      var s = el.querySelector(".s");
+      if (s) s.textContent = "Download on the";
+      var lbl = el.querySelector(".btn-label");
+      if (lbl) lbl.textContent = "Get the app";
+      var al = el.getAttribute("aria-label");
+      if (al) el.setAttribute("aria-label", "Download " + al);
       el.addEventListener("click", function(){
         try { if (window.pintrk) pintrk("track","lead",{lead_type: el.dataset.cta}); } catch(e){}
       });
