@@ -1,0 +1,5 @@
+# gstack browse daemon runtime state. Contains a loopback auth token and
+# request logs. Never commit: this repo is public and serves onlycars-app.com.
+.gstack/
+
+.DS_Store
