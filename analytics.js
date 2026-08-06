@@ -35,7 +35,7 @@
   // Set WEBSITE_ID to the id from Umami Cloud (Settings -> Websites -> Edit).
   // Use the SAME id as koalaloop.games so both sites report into one property.
   // Until it is a real id, no analytics script loads and the rest still runs.
-  var WEBSITE_ID = "";
+  var WEBSITE_ID = "080c87ab-8a6b-497a-a69e-601952d380f2";
   var SCRIPT_SRC = "https://cloud.umami.is/script.js";
 
   var STORE_HOST = "apps.apple.com";
