@@ -42,6 +42,18 @@
   var STORE_KEY = "kl_src";  // sessionStorage: the channel a visitor arrived from
   var CAMP_KEY = "kl_camp";  // sessionStorage: the campaign, if the link carried one
 
+  /* Apple's provider token. A campaign link needs BOTH pt and ct to show up in
+   * App Store Connect Analytics; ct on its own is silently dropped:
+   * https://developer.apple.com/help/app-store-connect-analytics/acquisition/campaign-links/
+   *
+   * Leave "" if the App Store URL you paste into each page is a real
+   * ASC-generated campaign link, since those already carry pt. Set it only when
+   * you are building store URLs by hand. Until a pt is available from one of
+   * those two places, this file deliberately does NOT write a ct, so no link
+   * ever looks attributed when Apple would ignore it. Clicks are still counted
+   * in Umami and tagged attribution="missing-pt". */
+  var PROVIDER_TOKEN = "";
+
   // --- helpers ------------------------------------------------------------
   function session(key, value) {
     try {
@@ -189,21 +201,52 @@
       return;
     }
 
-    /* Preserve a hand-written ct (for example ?ct=web-preview) by appending
+    /* Read the hand-written ct from the anchor's dataset, never from the live
+     * href. This function rewrites a.href, so on any second click the href
+     * already carries the stamped token. Treating that as the base appends
+     * again and the campaign bucket drifts with every click:
+     *   web -> web-tiktok-aug -> web-tiktok-aug-tiktok-aug -> ...
+     * A Cmd/Ctrl-click or middle-click leaves the page open, so this is
+     * reachable in normal use, and each click lands in a different ASC bucket.
+     * Capture the original once, then always recompute from it. */
+    var base = a.getAttribute("data-base-ct");
+    if (base === null) {
+      base = url.searchParams.get("ct") || "";
+      a.setAttribute("data-base-ct", base);
+    }
+
+    /* Preserve that hand-written ct (for example ?ct=web-preview) by appending
      * rather than replacing, so a deliberate per-placement token is not lost
      * to whatever channel the visitor happened to arrive from. */
-    var existing = cleanToken(url.searchParams.get("ct"));
+    var existing = cleanToken(base);
     var finalToken = existing && existing !== token
       ? cleanToken(existing + "-" + token)
       : token;
 
-    url.searchParams.set("ct", finalToken);
-    a.href = url.toString();
+    /* Apple needs BOTH a provider token and a campaign token for a campaign to
+     * appear in App Store Connect Analytics:
+     * https://developer.apple.com/help/app-store-connect-analytics/acquisition/campaign-links/
+     * Writing ct without pt produces a link that looks instrumented while ASC
+     * silently omits the campaign, which is worse than no stamping at all
+     * because it reads as working. So only stamp when a pt is actually
+     * available, either already on the ASC-generated URL or configured above. */
+    var provider = url.searchParams.get("pt") || PROVIDER_TOKEN;
+    var armed = !!provider;
 
+    if (armed) {
+      url.searchParams.set("pt", provider);
+      url.searchParams.set("ct", finalToken);
+      a.href = url.toString();
+    }
+
+    /* Record the click either way: the Umami side is independent of Apple's
+     * reporting, and `attribution` makes a missing pt visible in the dashboard
+     * rather than something you discover from an empty ASC report weeks later. */
     track("appstore-click", {
       app: /id(\d+)/.test(url.pathname) ? RegExp.$1 : "unknown",
       source: source,
-      ct: finalToken,
+      ct: armed ? finalToken : "",
+      attribution: armed ? "armed" : "missing-pt",
       page: location.pathname
     });
   }
