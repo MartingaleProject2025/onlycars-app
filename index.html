@@ -32,16 +32,23 @@
 /* ─── CONFIG ─── edit these two, then deploy. ────────────────────────────────
    1) APP_STORE_URL — your App Store link. Once live, generate an Apple
       *campaign link* (App Store Connect → App Analytics → Acquisition →
-      campaign links) carrying a token like  ?ct=pinterest  so installs from
-      Pinterest show up in App Analytics. Paste that full link here.
+      campaign links) and paste the FULL link, including its `pt=`.
+
+      It must carry a provider token (`pt`), not just a campaign token (`ct`).
+      Apple needs both for a campaign to appear in App Analytics, and a
+      ct-only link is accepted silently while reporting nothing:
+      https://developer.apple.com/help/app-store-connect-analytics/acquisition/campaign-links/
+      A hand-written `...?ct=pinterest` is exactly that trap. If you paste a
+      link with no pt, analytics.js leaves ct off rather than faking it, and
+      tags the click attribution="missing-pt" so the gap shows up in Umami.
    2) PINTEREST_TAG_ID — from Pinterest Ads Manager → Conversions → Tag.
       Leave "" until you have it; tracking stays dormant (no errors).
 ────────────────────────────────────────────────────────────────────────────*/
 window.ONLYCARS = {
   // Empty while the App Store listing is down. Every CTA renders as a
   // non-clickable "Coming soon" pill until this is a real https
-  // apps.apple.com link again. Restore the full campaign link (keep
-  // ?ct=pinterest for App Analytics) and the buttons re-arm themselves.
+  // apps.apple.com link again. Restore the full ASC campaign link (with its
+  // pt and ct) and the buttons re-arm themselves.
   APP_STORE_URL: "",
   PINTEREST_TAG_ID: "" // TODO paste Pinterest Tag ID, e.g. "2613xxxxxxxxx"
 };
